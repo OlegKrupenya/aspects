@@ -4,20 +4,19 @@ import java.time.temporal.TemporalUnit;
 import java.util.Date;
 
 public privileged aspect AccountAspect {
-    final int MIN_BALANCE = 10;
-    Date beforeDate;
-    Date afterDate;
+    long beforeTime;
+    long afterTime;
 
     pointcut callWithDraw(int amount, Account acc) :
             call(boolean Account.doSomething(int)) && args(amount) && target(acc);
 
     before(int amount, Account acc) : callWithDraw(amount, acc) {
-        beforeDate = new Date();
+        beforeTime = System.nanoTime();
     }
 
     boolean around(int amount, Account acc) :
             callWithDraw(amount, acc) {
-        System.out.println("about to move");
+        System.out.println("around");
 //        if (acc.balance < amount) {
 //            return false;
 //        }
@@ -25,7 +24,7 @@ public privileged aspect AccountAspect {
     }
 
     after(int amount, Account balance) : callWithDraw(amount, balance) {
-        afterDate = new Date();
-        System.out.println(afterDate.getTime() - beforeDate.getTime());
+        afterTime = System.nanoTime();
+        System.out.println((afterTime - beforeTime) / 1000000);
     }
 }
